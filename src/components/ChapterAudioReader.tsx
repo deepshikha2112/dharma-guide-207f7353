@@ -4,9 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookOpen, Play, Pause, Square, Volume2, VolumeX, ChevronDown, ChevronUp, Headphones, BookOpenText } from 'lucide-react';
+import { BookOpen, Play, Pause, Square, Volume2, VolumeX, ChevronDown, ChevronUp, Headphones, BookOpenText, Loader2 } from 'lucide-react';
 import { useDivineAudio, MoodType, InstrumentType } from '@/hooks/useDivineAudio';
-import { useScriptureNarration } from '@/hooks/useScriptureNarration';
+import { useElevenLabsTTS } from '@/hooks/useElevenLabsTTS';
 
 interface Chapter {
   id: string;
@@ -24,7 +24,7 @@ interface ChapterAudioReaderProps {
 
 const ChapterAudioReader = ({ chapters, deityName }: ChapterAudioReaderProps) => {
   const { play, stop, setVolume, isPlaying } = useDivineAudio();
-  const narration = useScriptureNarration();
+  const narration = useElevenLabsTTS();
   
   const [expandedChapter, setExpandedChapter] = useState<string | null>(chapters[0]?.id || null);
   const [playingChapter, setPlayingChapter] = useState<string | null>(null);
@@ -32,7 +32,6 @@ const ChapterAudioReader = ({ chapters, deityName }: ChapterAudioReaderProps) =>
   const [mode, setMode] = useState<'read' | 'listen'>('read');
   const [volume, setVolumeState] = useState(0.35);
   const [isMuted, setIsMuted] = useState(false);
-  const [narrationRate, setNarrationRate] = useState(0.85);
 
   useEffect(() => {
     return () => {
@@ -72,8 +71,8 @@ const ChapterAudioReader = ({ chapters, deityName }: ChapterAudioReaderProps) =>
       setVolume(volume * 0.3); // Lower existing music
     }
     
-    // Start narration
-    narration.startNarration(chapter.content, { rate: narrationRate });
+    // Start narration with ElevenLabs
+    narration.startNarration(chapter.content);
     setListeningChapter(chapter.id);
   };
 
@@ -104,11 +103,7 @@ const ChapterAudioReader = ({ chapters, deityName }: ChapterAudioReaderProps) =>
     }
   };
 
-  const handleNarrationRateChange = (value: number[]) => {
-    const newRate = value[0];
-    setNarrationRate(newRate);
-    narration.setRate(newRate);
-  };
+  // Speed control removed - ElevenLabs handles this server-side
 
   const toggleMute = () => {
     setIsMuted(!isMuted);
@@ -254,17 +249,27 @@ const ChapterAudioReader = ({ chapters, deityName }: ChapterAudioReaderProps) =>
                       <div className="flex items-center gap-3">
                         {listeningChapter === chapter.id ? (
                           <>
-                            <Button
-                              size="icon"
-                              onClick={toggleNarrationPause}
-                              className="w-10 h-10 rounded-full bg-blue-600 hover:bg-blue-700"
-                            >
-                              {narration.isPaused ? (
-                                <Play className="w-4 h-4 ml-0.5" />
-                              ) : (
-                                <Pause className="w-4 h-4" />
-                              )}
-                            </Button>
+                            {narration.isLoading ? (
+                              <Button
+                                size="icon"
+                                disabled
+                                className="w-10 h-10 rounded-full bg-blue-600"
+                              >
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                              </Button>
+                            ) : (
+                              <Button
+                                size="icon"
+                                onClick={toggleNarrationPause}
+                                className="w-10 h-10 rounded-full bg-blue-600 hover:bg-blue-700"
+                              >
+                                {narration.isPaused ? (
+                                  <Play className="w-4 h-4 ml-0.5" />
+                                ) : (
+                                  <Pause className="w-4 h-4" />
+                                )}
+                              </Button>
+                            )}
                             <Button
                               size="icon"
                               variant="outline"
@@ -286,9 +291,11 @@ const ChapterAudioReader = ({ chapters, deityName }: ChapterAudioReaderProps) =>
                         <div>
                           <p className="text-sm font-medium text-foreground">
                             {listeningChapter === chapter.id 
-                              ? narration.isPaused 
-                                ? "Paused" 
-                                : `Narrating paragraph ${narration.currentParagraph + 1}...`
+                              ? narration.isLoading
+                                ? "Loading audio..."
+                                : narration.isPaused 
+                                  ? "Paused" 
+                                  : `Narrating paragraph ${narration.currentParagraph + 1} of ${narration.totalParagraphs}...`
                               : "Listen to this chapter"}
                           </p>
                           <p className="text-xs text-muted-foreground">
@@ -298,22 +305,20 @@ const ChapterAudioReader = ({ chapters, deityName }: ChapterAudioReaderProps) =>
                       </div>
                     </div>
                     
-                    {/* Narration Controls */}
+                    {/* Volume Controls */}
                     {listeningChapter === chapter.id && (
-                      <div className="flex items-center gap-4 pt-2 border-t border-blue-500/10">
-                        <div className="flex items-center gap-2 flex-1">
-                          <span className="text-xs text-muted-foreground whitespace-nowrap">Speed</span>
-                          <Slider
-                            value={[narrationRate]}
-                            onValueChange={handleNarrationRateChange}
-                            min={0.5}
-                            max={1.5}
-                            step={0.05}
-                            className="w-24"
-                          />
-                          <span className="text-xs text-muted-foreground w-8">{narrationRate.toFixed(1)}x</span>
-                        </div>
-                        <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-between gap-4 pt-2 border-t border-blue-500/10">
+                        {narration.isLoading && (
+                          <div className="flex items-center gap-2 text-blue-600">
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            <span className="text-xs">Generating audio...</span>
+                          </div>
+                        )}
+                        {narration.error && (
+                          <span className="text-xs text-red-500">{narration.error}</span>
+                        )}
+                        <div className="flex items-center gap-2 ml-auto">
+                          <span className="text-xs text-muted-foreground">Music</span>
                           <Button variant="ghost" size="icon" onClick={toggleMute} className="h-8 w-8">
                             {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
                           </Button>
