@@ -6,6 +6,8 @@ import { vishnuChaptersHindi } from './vishnuChaptersHindi';
 import { bhagavadGitaChaptersHindi } from './bhagavadGitaChaptersHindi';
 import { saiBabaChaptersHindi } from './saiBabaChaptersHindi';
 import { hanumanChaptersHindi } from './hanumanChaptersHindi';
+import { guruNanakChaptersHindi } from './guruNanakChaptersHindi';
+import { muruganChaptersHindi } from './muruganChaptersHindi';
 export interface DeityChapters {
   deityId: string;
   chapters: Chapter[];
