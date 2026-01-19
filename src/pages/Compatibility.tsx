@@ -100,8 +100,14 @@ const Compatibility = () => {
           "Authorization": `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
-          partner1,
-          partner2,
+          partner1: {
+            ...partner1,
+            timeOfBirth: partner1.timeOfBirth || null
+          },
+          partner2: {
+            ...partner2,
+            timeOfBirth: partner2.timeOfBirth || null
+          },
           relationshipType,
           language
         }),
