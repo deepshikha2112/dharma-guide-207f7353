@@ -23,7 +23,7 @@ const VALID_LANGUAGES = ["hindi", "english"] as const;
 const partnerSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name too long (max 100 chars)").trim(),
   dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (use YYYY-MM-DD)"),
-  timeOfBirth: z.string().regex(/^\d{2}:\d{2}$/, "Invalid time format (use HH:MM)").optional().nullable(),
+  timeOfBirth: z.string().regex(/^\d{2}:\d{2}$/, "Invalid time format (use HH:MM)").optional().nullable().or(z.literal("")),
   placeOfBirth: z.string().min(1, "Place is required").max(200, "Place too long (max 200 chars)").trim(),
   rashi: z.enum(VALID_RASHIS)
 });
@@ -32,7 +32,7 @@ const partnerSchema = z.object({
 const matchingSchema = z.object({
   partner1: partnerSchema,
   partner2: partnerSchema,
-  relationshipType: z.enum(VALID_RELATIONSHIP_TYPES),
+  relationshipType: z.enum(VALID_RELATIONSHIP_TYPES).optional().default("marriage").or(z.literal("").transform(() => "marriage" as const)),
   language: z.enum(VALID_LANGUAGES).default("hindi")
 });
 
