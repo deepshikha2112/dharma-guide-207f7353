@@ -29,7 +29,7 @@ const guidanceSchema = z.object({
   dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (use YYYY-MM-DD)"),
   timeOfBirth: z.string().transform(val => val === "" ? null : val).pipe(z.string().regex(/^\d{2}:\d{2}$/, "Invalid time format (use HH:MM)").nullable()).optional(),
   placeOfBirth: z.string().min(1, "Place is required").max(200, "Place too long (max 200 chars)").trim(),
-  gender: z.enum(VALID_GENDERS).optional(),
+  gender: z.enum(VALID_GENDERS).optional().or(z.literal("").transform(() => undefined)),
   problemCategory: z.enum(VALID_CATEGORIES),
   problem: z.string().min(10, "Problem too short (min 10 chars)").max(500, "Problem too long (max 500 chars)").trim(),
   rashi: z.enum(VALID_RASHIS),
