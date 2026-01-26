@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import logo from "@/assets/divya-dharshan-logo.jpeg";
 
 const Cover = () => {
   const navigate = useNavigate();
@@ -75,23 +76,21 @@ const Cover = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.5, ease: "easeOut" }}
       >
-        {/* Om Symbol - subtle */}
+        {/* Logo */}
         <motion.div
-          className="mb-12"
+          className="mb-8"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 2, delay: 0.3, ease: "easeOut" }}
         >
-          <span 
-            className="text-7xl md:text-8xl block"
+          <img 
+            src={logo} 
+            alt="Divya Dharshan" 
+            className="w-40 h-40 md:w-48 md:h-48 rounded-full mx-auto object-cover"
             style={{
-              color: "hsl(35 50% 70%)",
-              textShadow: "0 0 40px hsl(42 60% 75% / 0.4)",
-              fontWeight: 300,
+              boxShadow: "0 0 60px hsl(42 60% 75% / 0.5)",
             }}
-          >
-            ॐ
-          </span>
+          />
         </motion.div>
 
         {/* App Name - elegant, light */}

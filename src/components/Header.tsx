@@ -3,6 +3,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import logo from "@/assets/divya-dharshan-logo.jpeg";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,10 +37,10 @@ const Header = () => {
       }}
     >
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link to="/home" className="flex items-center gap-3">
-          <span className="text-2xl">🙏</span>
+        <Link to="/home" className="flex items-center gap-2">
+          <img src={logo} alt="Divya Dharshan" className="w-10 h-10 rounded-full object-cover" />
           <span className="font-heading text-xl font-semibold text-foreground">
-            Divya Darshan
+            Divya Dharshan
           </span>
         </Link>
         
@@ -90,9 +91,9 @@ const Header = () => {
             <div className="flex flex-col h-full py-6">
               <div className="flex items-center mb-8">
                 <Link to="/home" onClick={() => setIsOpen(false)} className="flex items-center gap-2">
-                  <span className="text-xl">🙏</span>
+                  <img src={logo} alt="Divya Dharshan" className="w-8 h-8 rounded-full object-cover" />
                   <span className="font-heading font-semibold text-foreground">
-                    Divya Darshan
+                    Divya Dharshan
                   </span>
                 </Link>
               </div>
