@@ -13,6 +13,8 @@ import { useDivineAudio, MoodType, InstrumentType } from '@/hooks/useDivineAudio
 export type { MoodType, InstrumentType } from '@/hooks/useDivineAudio';
 import { useElevenLabsTTS } from '@/hooks/useElevenLabsTTS';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 export interface Chapter {
   id: string;
@@ -32,6 +34,7 @@ interface ChapterAudioReaderProps {
 }
 
 const ChapterAudioReader = ({ chapters, deityName }: ChapterAudioReaderProps) => {
+  const { session } = useAuth();
   const { play, stop, setVolume, isPlaying } = useDivineAudio();
   const narration = useElevenLabsTTS();
   
@@ -118,6 +121,12 @@ const ChapterAudioReader = ({ chapters, deityName }: ChapterAudioReaderProps) =>
   const startListening = () => {
     if (!currentChapter) return;
     
+    // Check for authentication
+    if (!session?.access_token) {
+      toast.error("Please login to use the audio narration feature.");
+      return;
+    }
+    
     // Start background music
     if (playingChapter !== currentChapter.id) {
       play({ mood: currentChapter.mood, volume: isMuted ? 0 : volume * 0.3 });
@@ -126,7 +135,7 @@ const ChapterAudioReader = ({ chapters, deityName }: ChapterAudioReaderProps) =>
       setVolume(volume * 0.3);
     }
     
-    narration.startNarration(getChapterContent(currentChapter));
+    narration.startNarration(getChapterContent(currentChapter), { session });
     setListeningChapter(currentChapter.id);
   };
 

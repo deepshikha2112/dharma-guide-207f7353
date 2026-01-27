@@ -8,6 +8,7 @@ import { useDivineAudio, MoodType } from '@/hooks/useDivineAudio';
 import { useMeditationMusic } from '@/hooks/useMeditationMusic';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface MoodOption {
   mood: MoodType;
@@ -34,6 +35,7 @@ interface MoodSoundPlayerProps {
 }
 
 const MoodSoundPlayer = ({ compact = false, className }: MoodSoundPlayerProps) => {
+  const { session } = useAuth();
   const divineAudio = useDivineAudio();
   const meditationMusic = useMeditationMusic({
     onError: (error) => {
@@ -42,7 +44,8 @@ const MoodSoundPlayer = ({ compact = false, className }: MoodSoundPlayerProps) =
         description: error,
         variant: "destructive",
       });
-    }
+    },
+    session
   });
   
   const [volume, setVolumeState] = useState(0.5);

@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { getRashiFromDate, rashis } from "@/data/deities";
 import { Sparkles, User, Calendar, MapPin, Clock, Heart, MessageCircle, Loader2, Globe, HelpCircle, Users } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface UserProfile {
   name: string;
@@ -36,6 +37,7 @@ const problemCategories = [
 
 const Guidance = () => {
   const navigate = useNavigate();
+  const { session } = useAuth();
   const [mode, setMode] = useState<"select" | "personal" | "compatibility">("select");
   const [language, setLanguage] = useState<"hindi" | "english" | null>(null);
   const [step, setStep] = useState(0); // 0 = language selection
@@ -71,15 +73,21 @@ const Guidance = () => {
   const selectedCategory = problemCategories.find(c => c.id === profile.problemCategory);
 
   const streamGuidance = useCallback(async () => {
+    // Check if user is authenticated
+    if (!session?.access_token) {
+      toast.error(isHindi ? "कृपया पहले लॉगिन करें।" : "Please login first.");
+      navigate("/auth");
+      return;
+    }
+
     setIsLoading(true);
     setGuidance("");
     setStep(4);
     setSessionActive(true); // Mark session as active after first prediction
 
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
     
-    if (!supabaseUrl || !supabaseKey) {
+    if (!supabaseUrl) {
       console.error("Missing environment variables");
       toast.error(isHindi ? "सर्वर कॉन्फ़िगरेशन में त्रुटि है।" : "Server configuration error.");
       setStep(3);
@@ -93,7 +101,7 @@ const Guidance = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${supabaseKey}`,
+          "Authorization": `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           name: profile.name,
@@ -185,7 +193,7 @@ const Guidance = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [profile, language, isHindi]);
+  }, [profile, language, isHindi, session, navigate]);
 
   const resetForm = () => {
     setStep(0);
