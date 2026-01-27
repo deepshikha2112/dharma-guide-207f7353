@@ -1,8 +1,10 @@
 import { useState, useRef, useCallback } from 'react';
+import { Session } from '@supabase/supabase-js';
 
 interface TTSOptions {
   voiceId?: string;
   onProgress?: (currentParagraph: number, totalParagraphs: number) => void;
+  session?: Session | null;
 }
 
 export const useElevenLabsTTS = () => {
@@ -22,6 +24,16 @@ export const useElevenLabsTTS = () => {
 
   const generateAndPlayParagraph = useCallback(async (index: number) => {
     if (isStoppedRef.current || index >= paragraphsRef.current.length) {
+      setIsPlaying(false);
+      setIsLoading(false);
+      isPlayingRef.current = false;
+      return;
+    }
+
+    // Check for valid session
+    const session = optionsRef.current.session;
+    if (!session?.access_token) {
+      setError('Authentication required');
       setIsPlaying(false);
       setIsLoading(false);
       isPlayingRef.current = false;
@@ -48,8 +60,7 @@ export const useElevenLabsTTS = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            'Authorization': `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({
             text: paragraph,

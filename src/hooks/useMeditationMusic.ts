@@ -1,8 +1,10 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { Session } from '@supabase/supabase-js';
 import { MoodType } from './useDivineAudio';
 
 interface UseMeditationMusicOptions {
   onError?: (error: string) => void;
+  session?: Session | null;
 }
 
 interface MeditationMusicState {
@@ -41,6 +43,14 @@ export const useMeditationMusic = (options?: UseMeditationMusicOptions) => {
   }, []);
 
   const generateMeditationMusic = useCallback(async (mood: MoodType, duration: number = 30): Promise<string | null> => {
+    // Check for valid session
+    if (!options?.session?.access_token) {
+      const errorMessage = "Authentication required";
+      setState(prev => ({ ...prev, isLoading: false, error: errorMessage }));
+      options?.onError?.(errorMessage);
+      return null;
+    }
+
     // Check cache first
     const cacheKey = `${mood}-${duration}`;
     if (cacheRef.current.has(cacheKey)) {
@@ -56,8 +66,7 @@ export const useMeditationMusic = (options?: UseMeditationMusicOptions) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            "Authorization": `Bearer ${options.session.access_token}`,
           },
           body: JSON.stringify({ mood, duration }),
         }
