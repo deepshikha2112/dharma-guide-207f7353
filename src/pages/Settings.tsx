@@ -105,10 +105,6 @@ const Settings = () => {
     { value: "large", label: "Large" },
   ];
 
-  const openExternalLink = (url: string) => {
-    window.open(url, "_blank", "noopener,noreferrer");
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5">
       {/* Header */}
@@ -324,18 +320,18 @@ const Settings = () => {
           <SettingsRow
             icon={<Shield className="w-5 h-5" />}
             label="Privacy Policy"
-            onClick={() => openExternalLink("#privacy-policy")}
+            onClick={() => navigate("/privacy-policy")}
           />
           <SettingsRow
             icon={<Shield className="w-5 h-5" />}
             label="Terms & Conditions"
-            onClick={() => openExternalLink("#terms-conditions")}
+            onClick={() => navigate("/terms-conditions")}
           />
           <SettingsRow
             icon={<Info className="w-5 h-5" />}
             label="About App"
             sublabel="Divya Darshan v1.0.0"
-            onClick={() => openExternalLink("#about")}
+            onClick={() => navigate("/about")}
           />
         </SettingsSection>
 
@@ -343,15 +339,15 @@ const Settings = () => {
         <SettingsSection title="Support">
           <SettingsRow
             icon={<Mail className="w-5 h-5" />}
-            label="Contact Support"
+            label="Contact & Support"
             sublabel="Get help with any issues"
-            onClick={() => openExternalLink("mailto:support@divyadarshan.app")}
+            onClick={() => navigate("/contact")}
           />
           <SettingsRow
             icon={<MessageCircle className="w-5 h-5" />}
             label="Feedback / Report a Problem"
             sublabel="Help us improve the app"
-            onClick={() => openExternalLink("#feedback")}
+            onClick={() => navigate("/contact")}
           />
         </SettingsSection>
 

@@ -46,10 +46,10 @@ const Footer = () => {
           <div>
             <h4 className="font-heading font-semibold mb-4 text-accent">Connect</h4>
             <ul className="space-y-2 text-sm text-secondary-foreground/70">
-              <li><a href="#" className="hover:text-accent transition-colors">About Us</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Contact</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Feedback</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Share App</a></li>
+              <li><a href="/about" className="hover:text-accent transition-colors">About Us</a></li>
+              <li><a href="/contact" className="hover:text-accent transition-colors">Contact</a></li>
+              <li><a href="/privacy-policy" className="hover:text-accent transition-colors">Privacy Policy</a></li>
+              <li><a href="/terms-conditions" className="hover:text-accent transition-colors">Terms</a></li>
             </ul>
           </div>
         </div>
@@ -60,7 +60,7 @@ const Footer = () => {
           </p>
 
           <p className="text-xs text-secondary-foreground/40">
-            © 2024 Divya Darshan. Made with 🙏 and devotion.
+            © 2025 Divya Darshan. Made with 🙏 and devotion.
           </p>
         </div>
       </div>
