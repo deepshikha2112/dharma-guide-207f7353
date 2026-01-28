@@ -28,6 +28,10 @@ import Sadhna from "./pages/Sadhna";
 import Mantras from "./pages/Mantras";
 import PredictionInfo from "./pages/PredictionInfo";
 import Settings from "./pages/Settings";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsConditions from "./pages/TermsConditions";
+import AboutApp from "./pages/AboutApp";
+import ContactSupport from "./pages/ContactSupport";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -63,6 +67,10 @@ const App = () => (
               <Route path="/mantras" element={<ProtectedRoute><Mantras /></ProtectedRoute>} />
               <Route path="/prediction-info" element={<ProtectedRoute><PredictionInfo /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+              <Route path="/privacy-policy" element={<ProtectedRoute><PrivacyPolicy /></ProtectedRoute>} />
+              <Route path="/terms-conditions" element={<ProtectedRoute><TermsConditions /></ProtectedRoute>} />
+              <Route path="/about" element={<ProtectedRoute><AboutApp /></ProtectedRoute>} />
+              <Route path="/contact" element={<ProtectedRoute><ContactSupport /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
