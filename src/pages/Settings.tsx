@@ -2,12 +2,13 @@ import { useNavigate } from "react-router-dom";
 import { 
   ArrowLeft, Sun, Moon, Globe, Bell, Volume2, VolumeX, Type, Shield, Info, 
   MessageCircle, Mail, ChevronRight, Sunrise, Sun as SunIcon, Moon as MoonIcon, 
-  BellRing, BellOff 
+  BellRing, BellOff, Smartphone
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { useSettings, ThemeMode, Language, TextSize } from "@/contexts/SettingsContext";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 interface SettingsSectionProps {
   title: string;
@@ -72,7 +73,23 @@ const Settings = () => {
     setTextSize,
   } = useSettings();
 
+  const { 
+    isSupported: pushSupported, 
+    isSubscribed: pushSubscribed, 
+    isLoading: pushLoading,
+    subscribe: subscribePush,
+    unsubscribe: unsubscribePush 
+  } = usePushNotifications();
+
   const { themeMode, language, notifications, backgroundMusic, volume, textSize } = settings;
+
+  const handlePushToggle = async (checked: boolean) => {
+    if (checked) {
+      await subscribePush();
+    } else {
+      await unsubscribePush();
+    }
+  };
 
   const handleThemeToggle = () => {
     setThemeMode(themeMode === "light" ? "dark" : "light");
@@ -215,6 +232,31 @@ const Settings = () => {
             />
           </SettingsRow>
         </SettingsSection>
+
+        {/* Push Notifications */}
+        {pushSupported && (
+          <SettingsSection title="Push Notifications">
+            <SettingsRow
+              icon={<Smartphone className="w-5 h-5" />}
+              label="Enable Push Notifications"
+              sublabel={pushSubscribed ? "Receive reminders even when app is closed" : "Get spiritual reminders on your device"}
+            >
+              <Switch
+                checked={pushSubscribed}
+                onCheckedChange={handlePushToggle}
+                disabled={pushLoading}
+              />
+            </SettingsRow>
+            {pushSubscribed && (
+              <div className="px-4 py-3 text-sm text-muted-foreground bg-muted/30">
+                <p className="flex items-center gap-2">
+                  <span className="text-green-600">✓</span>
+                  You'll receive 3 spiritual messages daily at scheduled times
+                </p>
+              </div>
+            )}
+          </SettingsSection>
+        )}
 
         {/* Audio Settings */}
         <SettingsSection title="Audio">
